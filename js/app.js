@@ -3,75 +3,54 @@ let productos = [];
 let carrito = [];
 let cantpart;
 let cantpartit;
-///Descomentar para ejecutar esto una vez y que se cargue al localStorage los productos
-//productos.push(new Producto('Solista',2000,1));
-//productos.push(new Producto('Dúo',3600,2));
-//productos.push(new Producto('Trío',4500,3));
-//productos.push(new Producto('Grupal',1200,1));//
 
 
-//localStorage.setItem('productos', JSON.stringify(productos));
+localStorage.setItem('productos', JSON.stringify(productos));
 
 let productosCoreog = [];
-
-fetch('./tiposCoreog.json') 
-    .then((response) => {
-        if (response.ok) {
-           return response.json(); 
-        }
-    })
-    .then((productos) => {
-      
-        productosCoreog = productos;
-        console.log(productosCoreog);
-    })
-
-
 
 const selectProductos = document.querySelector('#productos');
 const btnAgregar = document.querySelector('#agregar');
 
-
-
-function traerItemsStorage() {
-    productos = JSON.parse(localStorage.getItem('productos')) || [];
-    carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-
-}
-
-
 function popularDropdown() {
-    productos.forEach(({nombre,porpart}, index) => { 
-       
-        const option = document.createElement('option');
-        option.textContent = `${nombre} - precio por participante $${porpart}`;
-        option.value = index; 
-        selectProductos.appendChild(option);
-    });
+  productos.forEach(({nombre, preciopp}, index) => { 
+    const option = document.createElement('option');
+    option.textContent = `${nombre} - precio por participante $${preciopp}`;
+    option.value = index; 
+    selectProductos.appendChild(option);
+  });
 }
 
+async function traerProductos() {
+  const response = await fetch('./tiposCoreog.json');
+  if (response.ok){
+    productosCoreog= await response.json();
+    productos = productosCoreog; // Asignar el valor de productosCoreog a productos
+  }
+  popularDropdown();
+}
+
+carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    traerItemsStorage();
-    popularDropdown();
-    dibujarTabla();
+  traerProductos();
+  dibujarTabla();
 
-
-    btnAgregar.addEventListener('submit', (e) => {
-        e.preventDefault();
+  btnAgregar.addEventListener('submit', (e) => {
+    e.preventDefault();
     const productoSeleccionado = productos.find((item, index) => index === +selectProductos.value);
-  
+
     if (productoSeleccionado === undefined) {
       alert('Usted primero debe seleccionar un producto');
       return;
     }
-  
+
     if (productoSeleccionado.nombre !== productos[3].nombre) {
       cantpart = 1;
       cantpartit = productoSeleccionado.particip * cantpart;
-      const item = new Item(productoSeleccionado.nombre, productoSeleccionado.porpart, cantpartit);
+      const item = new Item(productoSeleccionado.nombre, productoSeleccionado.preciopp, cantpartit);
       carrito.push(item);
       localStorage.setItem('carrito', JSON.stringify(carrito));
       dibujarTabla();
@@ -91,56 +70,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (result.isConfirmed) {
           cantpart = parseInt(result.value);
           cantpartit = productoSeleccionado.particip * cantpart;
-          const item = new Item(productoSeleccionado.nombre, productoSeleccionado.porpart, cantpartit);
+          const item = new Item(productoSeleccionado.nombre, productoSeleccionado.preciopp, cantpartit);
           carrito.push(item);
           localStorage.setItem('carrito', JSON.stringify(carrito));
           dibujarTabla();
           Swal.fire(`Ingresaste: ${cantpart}`);
         }
-        
       });
     }
-  })
+  });
 });
-  
-
 
 function dibujarTabla() {
-    const bodyTabla = document.getElementById('items');
-    const total = document.querySelector('#total');
-    bodyTabla.innerHTML = '';
-    
-    carrito.forEach((item, index) => {
-      const { nombre, preciopp, cantpart } = item;
-      
-      const row = document.createElement('tr');
-      row.className = 'text-white';
-      
-      row.innerHTML = `
-        <td>${index + 1 || ''}</td>
-        <td>${nombre || ''}</td>
-        <td>${cantpart || ''}</td>
-        <td>$${preciopp || ''}</td>
-        <td>$${cantpart * preciopp || 0}</td>
-        <td>
-          <button class="btn btn-light quitar-btn">Quitar</button>
-        </td>
-      `;
-      
-      bodyTabla.appendChild(row);
+  const bodyTabla = document.getElementById('items');
+  const total = document.querySelector('#total');
+  bodyTabla.innerHTML = '';
+
+  carrito.forEach((item, index) => {
+    const { nombre, preciopp, cantpart } = item;
+
+    const row = document.createElement('tr');
+    row.className = 'text-white';
+
+    row.innerHTML = `
+      <td>${index + 1 || ''}</td>
+      <td>${nombre || ''}</td>
+      <td>${cantpart || ''}</td>
+      <td>$${preciopp || ''}</td>
+      <td>$${cantpart * preciopp || 0}</td>
+      <td>
+        <button class="btn btn-light quitar-btn">Quitar</button>
+      </td>
+    `;
+
+    bodyTabla.appendChild(row);
+  });
+
+  const quitarButtons = document.querySelectorAll('.quitar-btn');
+  quitarButtons.forEach((button, index) => {
+    button.addEventListener('click', () => {
+      carrito.splice(index, 1);
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+      dibujarTabla();
     });
-    
- 
-    const quitarButtons = document.querySelectorAll('.quitar-btn');
-    quitarButtons.forEach((button, index) => {
-      button.addEventListener('click', () => {
-        carrito.splice(index, 1);
-        localStorage.setItem('carrito', JSON.stringify(carrito));
-        dibujarTabla();
-      });
-    });
-    
-    
-    total.textContent = carrito.reduce((acc, item) => acc + item.preciopp * item.cantpart, 0);
-  }
-  
+  });
+
+  total.textContent = carrito.reduce((acc, item) => acc + item.preciopp * item.cantpart, 0);
+}

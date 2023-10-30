@@ -2,22 +2,26 @@
     {
         "nombre": "Solista",
         "precio":2000,
-        "particip":1
+        "particip":1,
+        "preciopp":2000
     },
     {
         "nombre": "Dúo",
         "precio":3600,
-        "particip":2
+        "particip":2,
+        "preciopp":1800
     },
     {
         "nombre": "Trío",
         "precio":4500,
-        "particip":3
+        "particip":3,
+        "preciopp":1500
     },
     {
         "nombre": "Grupal",
         "precio":1200,
-        "particip":1
+        "particip":1,
+        "preciopp":1200
     }
 
 ]
