@@ -1,0 +1,23 @@
+[
+    {
+        "nombre": "Solista",
+        "precio":2000,
+        "particip":1
+    },
+    {
+        "nombre": "Dúo",
+        "precio":3600,
+        "particip":2
+    },
+    {
+        "nombre": "Trío",
+        "precio":4500,
+        "particip":3
+    },
+    {
+        "nombre": "Grupal",
+        "precio":1200,
+        "particip":1
+    }
+
+]

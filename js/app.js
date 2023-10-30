@@ -4,14 +4,28 @@ let carrito = [];
 let cantpart;
 let cantpartit;
 ///Descomentar para ejecutar esto una vez y que se cargue al localStorage los productos
+//productos.push(new Producto('Solista',2000,1));
+//productos.push(new Producto('Dúo',3600,2));
+//productos.push(new Producto('Trío',4500,3));
+//productos.push(new Producto('Grupal',1200,1));//
 
-productos.push(new Producto('Solista',2000,1));
-productos.push(new Producto('Dúo',3600,2));
-productos.push(new Producto('Trío',4500,3));
-productos.push(new Producto('Grupal',1200,1));
 
+//localStorage.setItem('productos', JSON.stringify(productos));
 
-localStorage.setItem('productos', JSON.stringify(productos));
+let productosCoreog = [];
+
+fetch('./tiposCoreog.json') 
+    .then((response) => {
+        if (response.ok) {
+           return response.json(); 
+        }
+    })
+    .then((productos) => {
+      
+        productosCoreog = productos;
+        console.log(productosCoreog);
+    })
+
 
 
 const selectProductos = document.querySelector('#productos');
