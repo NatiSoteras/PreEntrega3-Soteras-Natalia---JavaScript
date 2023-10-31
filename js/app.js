@@ -11,6 +11,7 @@ let productosCoreog = [];
 
 const selectProductos = document.querySelector('#productos');
 const btnAgregar = document.querySelector('#agregar');
+const btnVaciar = document.querySelector('#vaciar');
 
 function popularDropdown() {
   productos.forEach(({nombre, preciopp}, index) => { 
@@ -25,7 +26,7 @@ async function traerProductos() {
   const response = await fetch('./tiposCoreog.json');
   if (response.ok){
     productosCoreog= await response.json();
-    productos = productosCoreog; // Asignar el valor de productosCoreog a productos
+    productos = productosCoreog; 
   }
   popularDropdown();
 }
@@ -37,6 +38,7 @@ carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 document.addEventListener('DOMContentLoaded', () => {
   traerProductos();
   dibujarTabla();
+  
 
   btnAgregar.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -62,8 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmButtonText: 'Aceptar',
         cancelButtonText: 'Cancelar',
         inputValidator: (value) => {
-          if (value <= 3) {
-            return 'Debes ingresar una cantidad igual o mayor a 4';
+          if (value <= 3 || value>=31) {
+            return 'Debes ingresar una cantidad igual o mayor a 4 y menor o igual a 30';
           }
         },
       }).then((result) => {
@@ -81,8 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+btnVaciar.addEventListener('click', vaciarCarrito);
+
+function vaciarCarrito() {
+  carrito = [];
+  localStorage.setItem('carrito', JSON.stringify(carrito));
+  dibujarTabla();
+};
+
 function dibujarTabla() {
   const bodyTabla = document.getElementById('items');
+  const totalpart = document.querySelector('#totalpart');
   const total = document.querySelector('#total');
   bodyTabla.innerHTML = '';
 
@@ -115,5 +126,10 @@ function dibujarTabla() {
     });
   });
 
-  total.textContent = carrito.reduce((acc, item) => acc + item.preciopp * item.cantpart, 0);
+  totalpart.textContent = carrito.reduce((acc,item) => acc + item.cantpart , 0);
+  
+  total.textContent = `$${carrito.reduce((acc, item) => acc + item.preciopp * item.cantpart, 0)}`;
 }
+
+
+
